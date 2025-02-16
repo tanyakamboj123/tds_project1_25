@@ -160,18 +160,7 @@ def read_file(path: str):
     with open(file_path, "r", encoding="utf-8") as f:
         return {"content": f.read()}
     
-    
 
-@app.get("/read")
-async def read_file(path: str):
-    file_path = Path(path)
-
-    # Check if the file exists
-    if not file_path.exists() or not file_path.is_file():
-        raise HTTPException(status_code=404, detail="File not found")
-
-    # Read the file and return its contents
-    return file_path.read_text()
     
    
 @app.post("/run")
