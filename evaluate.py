@@ -170,12 +170,14 @@ Create an index file `/data/docs/index.json` that maps each filename (without th
 
 async def a7(email, **kwargs):
     expected = get_email(email)["from_email"]
+    print(expected)
     await run(
-        "`/data/email.txt` contains an email message. Pass the content to an LLM with instructions to extract the sender's email address, and write just the email address to `/data/email-sender.txt`"
+        "`./data/email.txt` contains an email message. Pass the content to an LLM with instructions to extract the sender's email address, and write just the email address to `/data/email-sender.txt`"
     )
-    result = await read("/data/email-sender.txt")
+    result = await read("./data/email-sender.txt")
+    print(result)
     if result != expected:
-        return mismatch("/data/email-sender.txt", expected, result)
+        return mismatch("./data/email-sender.txt", expected, result)
     return True
 
 

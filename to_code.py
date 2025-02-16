@@ -1,34 +1,33 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#  "sentence-transformers",
-#  "scikit-learn",
+#  "pillow",
+#  "pytesseract",
 # ]
 # ///
 
 import os
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
+import re
+from PIL import Image
+import pytesseract
 
-# Step 1: Ensure ./data/ directory exists
+# Ensure the data directory exists
 os.makedirs('./data/', exist_ok=True)
 
-# Step 2: Read comments from the file
-with open('./data/comments.txt', 'r') as f:
-    comments = [line.strip() for line in f if line.strip()]  # Ignore empty lines
-
-# Step 3: Generate embeddings for comments
-model = SentenceTransformer('all-MiniLM-L6-v2')
-embeddings = model.encode(comments)
-
-# Step 4: Calculate cosine similarities
-similarity_matrix = cosine_similarity(embeddings)
-
-# Step 5: Find the most similar pair
-most_similar_pair = np.unravel_index(np.argmax(similarity_matrix - np.eye(len(similarity_matrix))), similarity_matrix.shape)
-
-# Step 6: Write the most similar comments to a file
-with open('./data/comments-similar.txt', 'w') as f:
-    f.write(comments[most_similar_pair[0]] + '\n')
-    f.write(comments[most_similar_pair[1]] + '\n')
+# Load the image
+image_path = './data/credit_card.png'
+if os.path.exists(image_path):
+    image = Image.open(image_path)
+    # Use pytesseract to extract text from image
+    text = pytesseract.image_to_string(image)
+    # Search for credit card number pattern
+    card_number_match = re.search(r'\b(?:\d[ -]*?){13,16}\b', text)
+    if card_number_match:
+        card_number = card_number_match.group(0).replace(' ', '').replace('-', '')
+        # Write the credit card number to a file
+        with open('./data/credit-card.txt', 'w') as output_file:
+            output_file.write(card_number)
+    else:
+        print('No credit card number found')
+else:
+    print('Image not found')
