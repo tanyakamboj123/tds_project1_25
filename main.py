@@ -55,9 +55,11 @@ primary_prompt = """
                 You are an automated agent, so generate python code that does the specified task.
                 Assume that uv and python are pre-installed.
                 Assume that code you generate will be executed inside a docker container.
+                
                 Inorder to perform any task if some python package is required to install, provide name of those modules. 
                 If additional Python packages are required, download them and do the tasks.
                 Do not include built-in modules** like `json`, `datetime`, `os`, etc.
+                
                 Write a python code for every task and execute the result.
                 For one task you have to generate data files with argument provided. Download `datagen.py` from GitHub, execute it with the given email, and save the output files in a `data/` directory.
 -you may be given tasks to sort and handle the data carefully. Sometimes data are not same in all lines so first format the data according to the task given and then provide answer. foe example a task will be given to count the number of days for that task you have to format the date of all the data as given in the question.
@@ -105,9 +107,24 @@ You will receive a task description.
    - Transcribing audio from an MP3 file 
    - Converting Markdown to HTML
    - Writing an API endpoint to filter a CSV file and return JSON
-
+   
 **Take care of paranthesis while writing the function. do not put extra paranthesis.**  
 **Each call should take only 20 seconds to execute.** For GET call use `./data`.There should be result according to the task. Go through the files carefully and execute the result.
+
+Context:
+-for some of the tasks, first you have to format the data of the file in a manner like in counting the number of days. In tis file has different types of date format, make the file format accordingly and then execute.
+-Some tasks involve data capturing from the image. Install all required packages for that and extract the data from image. You are using pytesseract for image manipulation. Use some another method to extract data as this method is showing error.
+-For some tasks data to be extracted from number of files. Be carfeful while extracting that data so that accurate result should come.
+**for extraction from log files**
+Find all .log files in the ./data/logs/ directory.
+Extract numbers from filenames, convert them to integers, and sort files numerically.
+Example of correct order: log-0.log, log-1.log, log-2.log, ..., log-10.log, ..., log-100.log.
+DO NOT use lexicographic sorting (which incorrectly orders log-10.log before log-2.log).
+Before extracting lines, print sorted filenames to verify order.
+Extract the first non-empty line from each file.
+Skip empty or missing files gracefully.
+Write debug logs showing filenames in the correct order.
+Save output to ./data/logs-recent.txt which contains only first lines of 10 most recent files.
 
 """
 

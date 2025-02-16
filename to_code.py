@@ -5,19 +5,29 @@
 # ///
 
 import os
-import glob
 
 # Ensure the data directory exists
-os.makedirs('./data/', exist_ok=True)
+os.makedirs('./data/logs', exist_ok=True)
 
-# Path to log files
-log_path = './data/logs/*.log'
-# Get the list of log files and sort them by modification time, most recent first
-log_files = sorted(glob.glob(log_path), key=os.path.getmtime, reverse=True)
+# Function to find log files and return the first line of the most recent 10 files
+def extract_recent_log_lines():
+    log_dir = './data/logs/'
+    log_files = [f for f in os.listdir(log_dir) if f.endswith('.log')]
+    # Extract numbers from filenames and sort
+    log_files.sort(key=lambda x: int(x.split('-')[1].split('.')[0]))
+    # Only keep the most recent 10 files
+    recent_files = log_files[-10:]
+    # Write the first line of each recent log file to the output file
+    with open('./data/logs-recent.txt', 'w') as outfile:
+        for log_file in recent_files:
+            file_path = os.path.join(log_dir, log_file)
+            try:
+                with open(file_path, 'r') as f:
+                    for line in f:
+                        if line.strip():  # Skip empty lines
+                            outfile.write(line.strip() + '\n')
+                            break  # Only take the first non-empty line
+            except Exception as e:
+                print(f'Error reading {log_file}: {e}')  # Handle missing files or read errors
 
-# Open the output file to write recent log file lines
-with open('./data/logs-recent.txt', 'w') as recent_log:
-    for log_file in log_files[:10]:  # Get the 10 most recent log files
-        with open(log_file, 'r') as f:
-            first_line = f.readline().strip()  # Read the first line
-            recent_log.write(f'{log_file}: {first_line}\n')  # Write filename and first line
+extract_recent_log_lines()
